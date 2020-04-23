@@ -17,18 +17,18 @@ var chartGroup = svg.append("g").attr("transform", 'translate(${margin.left}, ${
 
 
 //create axis labels 
-var xlabelconf = [
+let xlabelconf = [
     {
         'x' : 0, 
         'y' : 30, 
         'value' : "poverty", 
         'active' : true, 
         'inactive' : false, 
-        'text' : "% in Poverty"
+        'text' : "% In Poverty"
     },
     {
         'x' : 0, 
-        'y' : 60,                                  //come back to this later and see if the parameters need change 
+        'y' : 60,                             //come back to this later and see if the parameters need change 
         'value' : "age", 
         'active' : false, 
         'inactive' : true, 
@@ -44,7 +44,7 @@ var xlabelconf = [
     }   
 ];
 
-var ylabelconf = [
+let ylabelconf = [
     {
         'x' : -height / 2, 
         'y' : -margin.left * 4 / 5, 
@@ -55,10 +55,19 @@ var ylabelconf = [
     },
     {
         'x' : -height / 2, 
-        'y' : -margin.left * 4 / 5, 
-        'value' : "obesity", 
-        'active' : true, 
-        'inactive' : false, 
-        'text' : "% Obese"
+        'y' : -margin.left * 3 / 5, 
+        'value' : "smokes", 
+        'active' : false, 
+        'inactive' : true, 
+        'text' : "% of Smokers"
+    },
+    {
+        'x' : -height / 2, 
+        'y' : -margin.left * 2 / 5, 
+        'value' : "healthcare", 
+        'active' : false, 
+        'inactive' : true, 
+        'text' : "% Lacks Healthcare "
     }
-]
+];
+
