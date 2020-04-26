@@ -1,105 +1,94 @@
-//setting parameters and defining the charts margin
+// setting parameters and defining the charts margin
+var svgWidth = 960;
+var svgHeight = 500;
+var margin = { top: 20, right: 40, bottom: 80, left: 100 };
+var width = svgWidth - margin.left - margin.right;     
+var height = svgHeight - margin.top - margin.bottom;
 
-let svgHeight = 450;
-let svgWidth = 900;
+// select the SVG and append it 
+var svg = d3.select("#scatter").append("svg").attr("width", svgWidth).attr("height", svgHeight);
+var chartGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-let margin = { top: 15, right: 30, bottom: 60, left: 80};
-
-//define dimensions of the charts area
-let height = svgHeight - margin.left - margin.right;
-let width = svgWidth - margin.top - margin.bottom;
-
-
-//select SVG and append body to it and make responsive 
-
-let svg = d3.select("#scatter").append("svg").attr("width", svgWidth).attr("height", svgHeight);
-let chartGroup = svg.append("g").attr("transform", 'translate(${margin.left}, ${margin.top})');
-
-
-//create axis labels 
-let xlabelconf = [
-    {
-        'x' : 0, 
-        'y' : 30, 
-        'value' : "poverty", 
-        'active' : true, 
-        'inactive' : false, 
-        'text' : "% In Poverty"
-    },
-    {
-        'x' : 0, 
-        'y' : 60,                             //come back to this later and see if the parameters need change 
-        'value' : "age", 
-        'active' : false, 
-        'inactive' : true, 
-        'text' : "Age"   
-    },
-    {
-        'x' : 0, 
-        'y' : 80, 
-        'value' : "income", 
-        'active' : false, 
-        'inactive' : true, 
-        'text' : " Household Income"
-    }   
+var xlabelconf = [                      //create axis labels 
+  {
+    'x': 0,
+    'y': 20,
+    'value': 'poverty',
+    'active': true,
+    'inactive': false,
+    'text': "Poverty (%)"
+  },
+  {
+    'x': 0,
+    'y': 40,
+    'value': 'age',
+    'active': false,
+    'inactive': true,
+    'text': "Age (Median)"                      //Find the functions that would allow you to manuever 
+  },
+  {
+    'x': 0,
+    'y': 60,
+    'value': 'income',
+    'active': false,
+    'inactive': true,
+    'text': "Household Income (Median)"
+  }
 ];
 
 let ylabelconf = [
-    {
-        'x' : -height / 2, 
-        'y' : -margin.left * 4 / 5, 
-        'value' : "obesity", 
-        'active' : true, 
-        'inactive' : false, 
-        'text' : "% Obese"
-    },
-    {
-        'x' : -height / 2, 
-        'y' : -margin.left * 3 / 5, 
-        'value' : "smokes", 
-        'active' : false, 
-        'inactive' : true, 
-        'text' : "% of Smokers"
-    },
-    {
-        'x' : -height / 2, 
-        'y' : -margin.left * 2 / 5, 
-        'value' : "healthcare", 
-        'active' : false, 
-        'inactive' : true, 
-        'text' : "% Lacks Healthcare "
-    }
+  {
+    'y': -margin.left * 4 / 5,                          //identify horizonal and vertical positions 
+    'x': -height / 2,          
+    'value': 'obesity',
+    'active': true,
+    'inactive': false,
+    'text': "Obese (%)"
+  },
+  {
+    'y': -margin.left * 3 / 5,
+    'x': -height / 2,
+    'value': 'smokes',
+    'active': false,
+    'inactive': true,
+    'text': "Smokes (%)"
+  },
+  {
+    'y': -margin.left * 2 / 5,
+    'x': -height / 2,
+    'value': 'healthcare',
+    'active': false,
+    'inactive': true,
+    'text': "Lacks Healthcare (%)"
+  }
 ];
 
 // Append a group to the SVG area and shift ('translate') it to the right and down 
 // Set in the chart margin in object
 
-
-
 let xvalues = xlabelconf.map(d => d.value);
 let yvalues = ylabelconf.map(d => d.value);
 
-//use default settings 
- 
-let chosenYAxis = yvalues[0];
+// Use defualt settings for axis 
+
 let chosenXAxis = xvalues[0];
+let chosenYAxis = yvalues[0];
+
+// 
 
 let getLinearScale = (data, chosenAxis) => {
-    let rangearr = [0, width];
-    if (chosenAxis == chosenYAxis) rangearr = [height, 0];
-    
-    
-    let min = d3.min(data, d => d[chosenAxis]);
-    let max = d3.max(data, d => d[chosenAxis]);
-    let padd = (max - min) * 0.1;
-    
-    
-// Input functions to 'transform' and 'translate'
-    let linearScale = d3.scaleLinear()
-        .domain([min - padd, max + padd])
-        .range(rangearr);
-    
-    return linearScale;
+  let rangearr = [0, width];
+  if (chosenAxis == chosenYAxis) rangearr = [height, 0];
+
+  let min = d3.min(data, d => d[chosenAxis]);
+  let max = d3.max(data, d => d[chosenAxis]);
+  let padd = (max - min) * 0.1;
+
+  let linearScale = d3.scaleLinear()
+    .domain([min - padd, max + padd])
+    .range(rangearr);
+
+  return linearScale;
 }
 
 let renderAxes = (newScale, newAxis, XorY) => {
@@ -122,12 +111,10 @@ let renderCircles = (circlesGroup, newScale, chosenAxis) => {
   return circlesGroup;
 }
 
-// Append a div to the body to create tooltips (assing to class)
-
 let updateToolTip = circlesGroup => {
 
   let percentstr = "";
-  if (chosenXAxis == "poverty") percentstr = "%";
+  if (chosenXAxis == "Poverty") percentstr = "%";
 
   let toolTip = d3.tip()
     .attr("class", "d3-tip")
@@ -142,7 +129,6 @@ let updateToolTip = circlesGroup => {
 
   return circlesGroup;
 }
-                                            //add function to display the tooltip 
 
 let renderAbbr = (abbrGroup, newScale, chosenAxis) => {
   let axis = 'x';
@@ -165,20 +151,18 @@ let setLabels = (labelsGroup, d, labels) => {
   labels.push(onelabel);
 }
 
-        //intialize tooltip to 
-
 let handleOnClickLabel = (trgt, data, XorY, labels, axis, circlesGroup, abbrGroup) => {
   let chosenAxis = d3.select(trgt).attr("value");
   let values;
   let previous;
 
-  if (XorY == 'x') {               // define axis and create labels 
+  if (XorY == 'x') {
     values = xvalues;
     previous = chosenXAxis;
   }
   else {
     values = yvalues;
-    previous = chosenYAxis;                 
+    previous = chosenYAxis;
   }
 
   if (chosenAxis !== previous) {
@@ -194,9 +178,6 @@ let handleOnClickLabel = (trgt, data, XorY, labels, axis, circlesGroup, abbrGrou
       else {
         chosenYAxis = chosenAxis;
       }
-        
-        
-// 
 
       linearScale = getLinearScale(data, chosenAxis);
       axis = renderAxes(linearScale, axis, XorY);
@@ -215,14 +196,11 @@ let handleOnClickLabel = (trgt, data, XorY, labels, axis, circlesGroup, abbrGrou
   }
 }
 
-
-// load the data from the csv file 
-
+// Load the CSV data 
 d3.csv("assets/data/data.csv").then((data, err) => {
   if (err) throw err;
-    
-    
-//Read the data 
+
+  // Parce the data for both X and Y axis 
   data.forEach(d => {
     // X-axis
     d.poverty = +d.poverty;
@@ -234,8 +212,6 @@ d3.csv("assets/data/data.csv").then((data, err) => {
     d.healthcare = +d.healthcare
   });
 
-    
-    // Define the both axis 
 
   let xLinearScale = getLinearScale(data, chosenXAxis);
   let yLinearScale = getLinearScale(data, chosenYAxis);
@@ -249,10 +225,10 @@ d3.csv("assets/data/data.csv").then((data, err) => {
     .classed("y-axis", true)
     .call(d3.axisLeft(yLinearScale));
 
-
+  // Label abd define both the Y and X axis 
 
   let xLabelsGroup = chartGroup.append("g")
-    .attr("transform", `translate(${width / 2}, ${height + 10})`);
+    .attr("transform", `translate(${width / 2}, ${height + 20})`);
   let yLabelsGroup = chartGroup.append("g")
     .attr("transform", "rotate(-90)")
 
@@ -262,9 +238,7 @@ d3.csv("assets/data/data.csv").then((data, err) => {
   xlabelconf.forEach(d => setLabels(xLabelsGroup, d, xlabels));
   ylabelconf.forEach(d => setLabels(yLabelsGroup, d, ylabels));
 
-
-    
-// Plot the data 
+  // Plotting the data 
 
   let circlesGroup = chartGroup.selectAll("circle")
     .data(data)
@@ -276,7 +250,7 @@ d3.csv("assets/data/data.csv").then((data, err) => {
     .attr("fill", "rgba(41,177,177,.6)")
     .attr("opacity", "1.0");
 
-  circlesGroup = updateToolTip(circlesGroup);             //
+  circlesGroup = updateToolTip(circlesGroup);
 
   let abbrGroup = chartGroup.selectAll("text.stateText")
     .data(data)
@@ -287,8 +261,7 @@ d3.csv("assets/data/data.csv").then((data, err) => {
     .attr("x", d => xLinearScale(d[chosenXAxis]))
     .attr("y", d => yLinearScale(d[chosenYAxis]))
     .attr("dy", 5);
-
-  // make responsive when called 
+// Make responsive when called 
 
   xLabelsGroup.selectAll("text")
     .on("click", () => {
@@ -302,4 +275,3 @@ d3.csv("assets/data/data.csv").then((data, err) => {
 }).catch(error => {
   console.log(error);
 });
-
